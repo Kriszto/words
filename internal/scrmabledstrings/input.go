@@ -2,54 +2,72 @@ package scrmabledstrings
 
 import (
 	"bufio"
-	"github.com/fatih/color"
 	"io"
-	"log"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Input struct {
 	reader io.Reader
 	dict   *Dictionary
-	param  string
 }
 
-func NewInput(filename string, options ...func(input *Input)) *Input {
-	file := openFile(filename)
-	obj := &Input{reader: file}
+func NewInput(options ...func(input *Input)) *Input {
+	i := &Input{}
 	for _, option := range options {
-		option(obj)
+		option(i)
 	}
-
-	return obj
+	return i
 }
 
-// WithInputParam sets the threadCount parameter of a Dictionary
+// WithDictionary sets the Dictionary field of an Input
 func WithDictionary(dict *Dictionary) func(f *Input) {
 	return func(i *Input) {
 		i.dict = dict
 	}
 }
 
-// WithInputParam sets the threadCount parameter of a Dictionary
-func WithInputParam(param string) func(f *Input) {
-	return func(p *Input) {
-		p.param = param
+// WithInputReader sets the reader field of an Input
+func WithInputReader(r io.Reader) func(f *Input) {
+	return func(i *Input) {
+		i.reader = r
 	}
 }
 
-// opens file
-func (inp *Input) ProcessFile() {
-	color.Green("processing file ...")
-	r := bufio.NewReader(inp.reader)
-	for {
-		if c, _, err := r.ReadRune(); err != nil {
-			if err == io.EOF {
-				break
-			} else {
-				log.Fatal(err)
-			}
-		} else {
-			inp.dict.addLetter(string(c))
-		}
+// WithInputFileName sets the reader field of an Input by filename
+func WithInputFileName(filename string) func(f *Input) {
+	file := openFile(filename)
+	return func(i *Input) {
+		i.reader = file
 	}
+}
+
+// ReadInput takes a pointer to the processed ticket slice,
+// reads input in a loop, and prints out the result
+func (inp *Input) ReadInput() []string {
+	log.Info().Msg("Reading input")
+	ret := make([]string, 0)
+	scanner := bufio.NewScanner(inp.reader)
+	for scanner.Scan() {
+		s := scanner.Text()
+		ret = append(ret, s)
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal().Err(err).Msg("Scanner error")
+	}
+	return ret
+}
+
+// ProcessInput takes a pointer to the processed ticket slice,
+// reads input in a loop, and prints out the result
+func (inp *Input) ProcessInput(t []string) []int {
+	log.Info().Msg("Processing input")
+	ret := make([]int, 0)
+	for _, s := range t {
+		n, _ := inp.dict.Result(s)
+		ret = append(ret, n)
+	}
+
+	return ret
 }

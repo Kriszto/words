@@ -1,101 +1,61 @@
 package scrmabledstrings
 
-type WordStatus int
-
-const (
-	NoHit WordStatus = iota
-	InProgress
-	Found
+import (
+	"github.com/rs/zerolog/log"
 )
 
 type Word struct {
-	str      string
-	status   WordStatus
-	findings []bool
+	str       string
+	frequency [26]int
 }
 
 func NewWord(str string, options ...func(dictionary *Word)) *Word {
-	f := make([]bool, len(str))
-	obj := &Word{str: str, findings: f}
+	obj := &Word{str: str}
 	for _, option := range options {
 		option(obj)
 	}
-
 	return obj
 }
 
-// WithStatus sets the status of a Dictionary
-func WithStatus(s WordStatus) func(f *Word) {
-	return func(p *Word) {
-		p.status = s
+// WithFrequency sets the param of the Word
+func WithFrequency(f *[26]int) func(w *Word) {
+	return func(w *Word) {
+		w.frequency = *f
 	}
 }
 
-// WithFindings sets the findings of a Dictionary
-func WithFindings(findings []bool) func(f *Word) {
-	return func(p *Word) {
-		p.findings = findings
+// WithBuildFrequency sets the param of the Word
+func WithBuildFrequency() func(w *Word) {
+	return func(w *Word) {
+		w.buildFrequency()
 	}
 }
 
-func (w *Word) AddLetters(l string) {
-	for _, s := range l {
-		w.AddLetter(string(s))
+// buildFrequency builds up a word's letter frequency
+func (w *Word) buildFrequency() {
+	for _, s := range w.str {
+		if int(s) < 97 {
+			log.Debug().Msgf("invalid character %s", string(s))
+			continue
+		}
+		w.frequency[int(s)-97]++
 	}
 }
 
-func (w *Word) AddLetter(l string) {
-	if w.status == Found {
-		return
-	}
+// equals calculates if two words are equal based on letter frequency
+func (w *Word) equals(w2 *Word) bool {
+	return len(w.str) == len(w2.str) && w.str[0] == w2.str[0] && w.str[len(w.str)-1] == w2.str[len(w2.str)-1] && w.frequency == w2.frequency
+}
 
-	if w.freeLetterPos(l) < 0 {
-		w.Reset()
-	}
-	if w.status == InProgress && w.hitCount() == len(w.str)-1 {
-		if l == w.str[len(w.str)-1:len(w.str)] {
-			w.findings[len(w.str)-1] = true
-			w.status = Found
-			return
-		} else {
-			w.Reset()
+// IsInString checks if a string contains the scrambled form of a word
+func (w *Word) IsInString(s string) bool {
+	tp := NewFragment(s, len(w.str))
+	for tp.Next() {
+		g := tp.GetNext()
+		if w.equals(g) {
+			return true
 		}
 	}
 
-	if w.status == NoHit && l == w.str[0:1] {
-		w.status = InProgress
-		w.findings[0] = true
-		return
-	}
-
-	if n := w.freeLetterPos(l); w.status == InProgress && n > 0 {
-		w.findings[n] = true
-		return
-	}
-}
-
-func (w *Word) freeLetterPos(l string) int {
-	for i := 0; i < len(w.str); i++ {
-		if l == w.str[i:i+1] && !w.findings[i] {
-			return i
-		}
-	}
-
-	return -1
-}
-
-func (w *Word) hitCount() int {
-	n := 0
-	for _, b := range w.findings {
-		if b {
-			n++
-		}
-	}
-
-	return n
-}
-
-func (w *Word) Reset() {
-	w.findings = make([]bool, len(w.str))
-	w.status = NoHit
+	return false
 }

@@ -4,16 +4,13 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 
-	"github.com/Ak-Army/xlog"
-	"github.com/fatih/color"
+	"github.com/rs/zerolog/log"
 )
 
 type Dictionary struct {
 	reader io.Reader
 	words  []*Word
-	param  string
 }
 
 func NewDictionary(options ...func(dictionary *Dictionary)) *Dictionary {
@@ -23,13 +20,6 @@ func NewDictionary(options ...func(dictionary *Dictionary)) *Dictionary {
 	}
 
 	return obj
-}
-
-// WithParam sets the param of the Dictionary
-func WithParam(param string) func(f *Dictionary) {
-	return func(p *Dictionary) {
-		p.param = param
-	}
 }
 
 // WithReader sets the reader of the Dictionary
@@ -47,73 +37,37 @@ func WithFileName(filename string) func(f *Dictionary) {
 	}
 }
 
-// WithWords sets the reader of the Dictionary
-func WithWords(w []*Word) func(f *Dictionary) {
-	return func(p *Dictionary) {
-		p.words = w
-	}
-}
-
 func (d *Dictionary) BuildWords() {
-	color.Green("building....")
+	log.Info().Msg("Building words")
 	scanner := bufio.NewScanner(d.reader)
-
-	const maxCapacity = 100000000 // your required line length
-	buf := make([]byte, maxCapacity)
-	scanner.Buffer(buf, maxCapacity)
-
 	for scanner.Scan() {
-		d.words = append(d.words, NewWord(scanner.Text()))
+		d.words = append(d.words, NewWord(scanner.Text(), WithBuildFrequency()))
 	}
 }
 
-func (d *Dictionary) addLetter(l string) {
-	for _, w := range d.words {
-		w.AddLetter(l)
+func (d *Dictionary) Result(s string) (n, l int) {
+	log.Info().Str("s", s).Msg("Processing input")
+	num := 0
+	for i, w := range d.words {
+		log.Debug().Str("word", w.str).Str("position", fmt.Sprintf("%d/%d", i+1, len(d.words))).Msgf("Searching for word")
+		if w.IsInString(s) {
+			log.Debug().Str("word", w.str).Str("position", fmt.Sprintf("%d/%d", i+1, len(d.words))).Msgf("Word found")
+			num++
+		} else {
+			log.Debug().Str("word", w.str).Str("position", fmt.Sprintf("%d/%d", i+1, len(d.words))).Msgf("Word not found")
+		}
 	}
-}
-
-func (d *Dictionary) addLetters(s string) {
-	for _, l := range s {
-		d.addLetter(string(l))
-	}
+	return num, len(d.words)
 }
 
 func (d *Dictionary) worldCount() int {
 	return len(d.words)
 }
 
-func (d *Dictionary) worldStrings() (ret []string) {
-	ret = make([]string, 0)
+func (d *Dictionary) worldStrings() []string {
+	ret := make([]string, 0)
 	for _, w := range d.words {
 		ret = append(ret, w.str)
 	}
-	return
-}
-
-func (d *Dictionary) Debug() {
-	n, l := d.Result()
-	xlog.Debugf("result %d/%d", n, l)
-}
-
-func (d *Dictionary) Result() (n, l int) {
-	num := 0
-	for _, w := range d.words {
-		if w.status == Found {
-			num++
-		}
-	}
-	return num, len(d.words)
-}
-
-// opens file
-func openFile(filename string) *os.File {
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Printf("Unable to open file %s (%s)", filename, err)
-		fmt.Println()
-		os.Exit(2)
-	}
-
-	return file
+	return ret
 }

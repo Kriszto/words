@@ -2,49 +2,75 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/Ak-Army/xlog"
-	"github.com/fatih/color"
-	"github.com/spf13/cobra"
 	"os"
 	"scrmabled-strings/internal/scrmabledstrings"
+	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
+
+	"github.com/spf13/cobra"
 
 	"github.com/spf13/viper"
 )
 
 var cfgFile string
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
-	Use:   "scrmabled-strings",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+func NewRootCmd() *cobra.Command {
+	start := time.Now()
+	return &cobra.Command{
+		Use: "scrambled-strings",
+		PostRun: func(cmd *cobra.Command, args []string) {
+			elapsed := time.Since(start)
+			log.Info().Str("elapsed time", elapsed.String()).Msgf("File reading and processing finished")
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			dictFilename, _ := cmd.Flags().GetString("dictionary")
+			inputFilename, _ := cmd.Flags().GetString("input")
+			logLevel, _ := cmd.Flags().GetInt("log-level")
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	Run: func(cmd *cobra.Command, args []string) {
-		dictFilename, _ := cmd.Flags().GetString("dictionary")
-		inputFilename, _ := cmd.Flags().GetString("input")
-		verbose, _ := cmd.Flags().GetBool("verbose")
-		color.Green("d: %s, i: %s", dictFilename, inputFilename)
+			setupLogging(logLevel)
 
-		d := scrmabledstrings.NewDictionary(dictFilename)
-		d.BuildWords()
-		if verbose {
-			xlog.Debug(d)
-		}
-		i := scrmabledstrings.NewInput(inputFilename, scrmabledstrings.WithDictionary(d))
-		i.ProcessFile()
-		//x := d.BuildAllScrambledWord()
-		//xlog.Debug(x)
-		//scrmabledstrings.GoPerm()
-		n, l := d.Result()
-		fmt.Printf("Case #1: %d (%d)\n", n, l)
-	},
+			log.Debug().Msgf("dictionary: %s, input: %s", dictFilename, inputFilename)
+			ret := process(dictFilename, inputFilename)
+			for _, r := range ret {
+				fmt.Println(r)
+			}
+			return nil
+		},
+	}
 }
+
+func setupLogging(logLevel int) {
+	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+	globalLevel := zerolog.Disabled
+	if logLevel == 1 {
+		globalLevel = zerolog.InfoLevel
+	} else if logLevel == 2 {
+		globalLevel = zerolog.DebugLevel
+	}
+	zerolog.SetGlobalLevel(globalLevel)
+	log.Level(globalLevel)
+}
+
+func process(dictFilename, inputFilename string) []string {
+	ret := make([]string, 0)
+	d := scrmabledstrings.NewDictionary(scrmabledstrings.WithFileName(dictFilename))
+	d.BuildWords()
+
+	i := scrmabledstrings.NewInput(scrmabledstrings.WithInputFileName(inputFilename), scrmabledstrings.WithDictionary(d))
+	t := i.ReadInput()
+	r := i.ProcessInput(t)
+	for k, n := range r {
+		ret = append(ret, fmt.Sprintf("Case #%d: %d", k, n))
+	}
+
+	return ret
+}
+
+// rootCmd represents the base command when called without any subcommands
+var rootCmd = NewRootCmd()
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
@@ -56,7 +82,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.Flags().StringP("dictionary", "d", "", "Dictionary filename")
 	rootCmd.Flags().StringP("input", "i", "", "Input filename")
-	rootCmd.Flags().StringP("verbose", "v", "", "Verbose output")
+	rootCmd.Flags().BoolP("verbose", "v", false, "Verbose output")
+	rootCmd.Flags().IntP("log-level", "l", 0, "log level, 0 (default): no logging, 1: info level, 2: debug level")
 	_ = rootCmd.MarkFlagRequired("input")
 	_ = rootCmd.MarkFlagRequired("dictionary")
 }
