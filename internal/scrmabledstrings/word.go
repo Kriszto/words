@@ -49,9 +49,10 @@ func (w *Word) AddLetter(l string) {
 		return
 	}
 
-	if w.freeLetterPos(l) < 0 {
+	if w.freeLetterPos(l) < 0 && w.hitCount() != len(w.str)-1 {
 		w.Reset()
 	}
+
 	if w.status == InProgress && w.hitCount() == len(w.str)-1 {
 		if l == w.str[len(w.str)-1:len(w.str)] {
 			w.findings[len(w.str)-1] = true
@@ -63,19 +64,19 @@ func (w *Word) AddLetter(l string) {
 	}
 
 	if w.status == NoHit && l == w.str[0:1] {
-		w.status = InProgress
+		if len(w.str) == 1 {
+			w.status = Found
+		} else {
+			w.status = InProgress
+		}
 		w.findings[0] = true
-		return
-	}
-
-	if n := w.freeLetterPos(l); w.status == InProgress && n > 0 {
+	} else if n := w.freeLetterPos(l); w.status == InProgress && n > 0 {
 		w.findings[n] = true
-		return
 	}
 }
 
 func (w *Word) freeLetterPos(l string) int {
-	for i := 0; i < len(w.str); i++ {
+	for i := 0; i < len(w.str)-1; i++ {
 		if l == w.str[i:i+1] && !w.findings[i] {
 			return i
 		}
@@ -95,7 +96,30 @@ func (w *Word) hitCount() int {
 	return n
 }
 
+func (w *Word) fullHit() bool {
+	ret := w.findings[0]
+	for _, b := range w.findings {
+		if b {
+			ret = ret && b
+		}
+	}
+
+	return ret
+}
+
 func (w *Word) Reset() {
 	w.findings = make([]bool, len(w.str))
 	w.status = NoHit
+}
+
+func (w *Word) Equals(w2 *Word) bool {
+	return w.status == w2.status
+}
+
+func (w *Word) GetStr() string {
+	return w.str
+}
+
+func (w *Word) GetStatus() WordStatus {
+	return w.status
 }

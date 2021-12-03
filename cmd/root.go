@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
+	"scrmabled-strings/internal/scrmabledstrings"
+
 	"github.com/Ak-Army/xlog"
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
-	"os"
-	"scrmabled-strings/internal/scrmabledstrings"
 
 	"github.com/spf13/viper"
 )
@@ -31,7 +32,7 @@ to quickly create a Cobra application.`,
 		verbose, _ := cmd.Flags().GetBool("verbose")
 		color.Green("d: %s, i: %s", dictFilename, inputFilename)
 
-		d := scrmabledstrings.NewDictionary(dictFilename)
+		d := scrmabledstrings.NewDictionary(scrmabledstrings.WithFileName(dictFilename))
 		d.BuildWords()
 		if verbose {
 			xlog.Debug(d)

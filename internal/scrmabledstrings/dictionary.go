@@ -67,6 +67,10 @@ func (d *Dictionary) BuildWords() {
 	}
 }
 
+func (d *Dictionary) GetWords() []*Word {
+	return d.words
+}
+
 func (d *Dictionary) addLetter(l string) {
 	for _, w := range d.words {
 		w.AddLetter(l)

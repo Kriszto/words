@@ -1,8 +1,9 @@
 package scrmabledstrings
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddLetter(t *testing.T) {
@@ -70,7 +71,43 @@ func TestAddLetter(t *testing.T) {
 			data:     NewWord("apple"),
 			expected: NewWord("apple", WithStatus(Found), WithFindings([]bool{true, true, true, true, true})),
 			letters:  "apapple",
-			desc:     "9 row, valid input",
+			desc:     "10 row, valid input",
+		},
+		{
+			data:     NewWord("a"),
+			expected: NewWord("a", WithStatus(Found), WithFindings([]bool{true})),
+			letters:  "apapple",
+			desc:     "11 row, valid input",
+		},
+		{
+			data:     NewWord("ooi"),
+			expected: NewWord("ooi", WithStatus(Found), WithFindings([]bool{true, true, true})),
+			letters:  "ooi",
+			desc:     "12 row, valid input",
+		},
+		{
+			data:     NewWord("ooi"),
+			expected: NewWord("ooi", WithStatus(Found), WithFindings([]bool{true, true, true})),
+			letters:  "oooi",
+			desc:     "13 row, valid input",
+		},
+		{
+			data:     NewWord("ooi"),
+			expected: NewWord("ooi", WithStatus(Found), WithFindings([]bool{true, true, true})),
+			letters:  "ooooi",
+			desc:     "14 row, valid input",
+		},
+		{
+			data:     NewWord("ooi"),
+			expected: NewWord("ooi", WithStatus(Found), WithFindings([]bool{true, true, true})),
+			letters:  "oooooi",
+			desc:     "15 row, valid input",
+		},
+		{
+			data:     NewWord("oco"),
+			expected: NewWord("oco", WithStatus(Found), WithFindings([]bool{true, true, true})),
+			letters:  "ooco",
+			desc:     "16 row, valid input",
 		},
 	}
 
