@@ -11,11 +11,12 @@ const (
 type Word struct {
 	str      string
 	status   WordStatus
-	findings []bool
+	findings []int
+	position int
 }
 
 func NewWord(str string, options ...func(dictionary *Word)) *Word {
-	f := make([]bool, len(str))
+	f := make([]int, len(str))
 	obj := &Word{str: str, findings: f}
 	for _, option := range options {
 		option(obj)
@@ -32,9 +33,16 @@ func WithStatus(s WordStatus) func(f *Word) {
 }
 
 // WithFindings sets the findings of a Dictionary
-func WithFindings(findings []bool) func(f *Word) {
+func WithFindings(findings []int) func(f *Word) {
 	return func(p *Word) {
 		p.findings = findings
+	}
+}
+
+// WithPosition sets the findings of a Dictionary
+func WithPosition(pos int) func(f *Word) {
+	return func(p *Word) {
+		p.position = pos
 	}
 }
 
@@ -55,7 +63,8 @@ func (w *Word) AddLetter(l string) {
 
 	if w.status == InProgress && w.hitCount() == len(w.str)-1 {
 		if l == w.str[len(w.str)-1:len(w.str)] {
-			w.findings[len(w.str)-1] = true
+			w.position++
+			w.findings[len(w.str)-1] = w.position
 			w.status = Found
 			return
 		} else {
@@ -69,15 +78,17 @@ func (w *Word) AddLetter(l string) {
 		} else {
 			w.status = InProgress
 		}
-		w.findings[0] = true
+		w.position++
+		w.findings[0] = w.position
 	} else if n := w.freeLetterPos(l); w.status == InProgress && n > 0 {
-		w.findings[n] = true
+		w.position++
+		w.findings[n] = w.position
 	}
 }
 
 func (w *Word) freeLetterPos(l string) int {
 	for i := 0; i < len(w.str)-1; i++ {
-		if l == w.str[i:i+1] && !w.findings[i] {
+		if l == w.str[i:i+1] && w.findings[i] == 0 {
 			return i
 		}
 	}
@@ -87,8 +98,8 @@ func (w *Word) freeLetterPos(l string) int {
 
 func (w *Word) hitCount() int {
 	n := 0
-	for _, b := range w.findings {
-		if b {
+	for _, i := range w.findings {
+		if i != 0 {
 			n++
 		}
 	}
@@ -97,18 +108,25 @@ func (w *Word) hitCount() int {
 }
 
 func (w *Word) fullHit() bool {
-	ret := w.findings[0]
-	for _, b := range w.findings {
-		if b {
-			ret = ret && b
+	for _, i := range w.findings {
+		if i == 0 {
+			return false
 		}
 	}
 
-	return ret
+	return true
+}
+
+func (w *Word) Recalc() {
+	//originalStr := ""
+	w.findings = make([]int, len(w.str))
+	w.position = 0
+	w.status = NoHit
 }
 
 func (w *Word) Reset() {
-	w.findings = make([]bool, len(w.str))
+	w.findings = make([]int, len(w.str))
+	w.position = 0
 	w.status = NoHit
 }
 
