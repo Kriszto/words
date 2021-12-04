@@ -1,6 +1,12 @@
 package scrmabledstrings
 
-/*
+import (
+	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
 func TestBuildWords(t *testing.T) {
 	var tests = []struct {
 		data      string
@@ -53,53 +59,3 @@ func TestBuildWords(t *testing.T) {
 		})
 	}
 }
-
-func TestAddLettersAndResult(t *testing.T) {
-	var tests = []struct {
-		words          []*Word
-		input          string
-		expectedResult int
-		wordCount      int
-		desc           string
-	}{
-		{
-			words: []*Word{
-				NewWord("apple"),
-			},
-			input:          "apple",
-			expectedResult: 1,
-			wordCount:      1,
-			desc:           "1 word, 1 hit",
-		},
-		{
-			words: []*Word{
-				NewWord("apple"),
-				NewWord("banana"),
-			},
-			input:          "appleljhadbanel",
-			expectedResult: 1,
-			wordCount:      2,
-			desc:           "2 word, 1 hit",
-		},
-		{
-			words: []*Word{
-				NewWord("apple"),
-				NewWord("banana"),
-			},
-			input:          "appleasdbananakas",
-			expectedResult: 2,
-			wordCount:      2,
-			desc:           "2 word, 2 hit",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.desc, func(t *testing.T) {
-			d := NewDictionary(WithWords(tt.words))
-			d.addLetters(tt.input)
-			assert.Equal(t, tt.wordCount, d.worldCount())
-			n, _ := d.Result()
-			assert.Equal(t, tt.expectedResult, n)
-		})
-	}
-}*/

@@ -1,5 +1,7 @@
 package scrmabledstrings
 
+import "github.com/Ak-Army/xlog"
+
 type Word struct {
 	str       string
 	frequency [26]int
@@ -10,12 +12,28 @@ func NewWord(str string, options ...func(dictionary *Word)) *Word {
 	for _, option := range options {
 		option(obj)
 	}
-	obj.buildFrequency()
 	return obj
 }
 
+// WithFrequency sets the param of the Word
+func WithFrequency(f *[26]int) func(w *Word) {
+	return func(w *Word) {
+		w.frequency = *f
+	}
+}
+
+// WithBuildFrequency sets the param of the Word
+func WithBuildFrequency() func(w *Word) {
+	return func(w *Word) {
+		w.buildFrequency()
+	}
+}
 func (w *Word) buildFrequency() {
 	for _, s := range w.str {
+		if int(s) < 97 {
+			xlog.Debugf("invalid character %s", s)
+			continue
+		}
 		w.frequency[int(s)-97]++
 	}
 }

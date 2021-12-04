@@ -54,19 +54,19 @@ func TestWord_IsInString(t *testing.T) {
 		desc     string
 	}{
 		{
-			w:        NewWord("abcde"),
+			w:        NewWord("abcde", WithBuildFrequency()),
 			s:        "abcdelkh",
 			expected: true,
 			desc:     "start equal",
 		},
 		{
-			w:        NewWord("abcde"),
+			w:        NewWord("abcde", WithBuildFrequency()),
 			s:        "dfabcdelh",
 			expected: true,
 			desc:     "middle equal",
 		},
 		{
-			w:        NewWord("abcde"),
+			w:        NewWord("abcde", WithBuildFrequency()),
 			s:        "wsfdabcde",
 			expected: true,
 			desc:     "end equal",

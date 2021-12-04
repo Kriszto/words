@@ -1,9 +1,10 @@
 package scrmabledstrings
 
 type TextPortion struct {
-	w   *Word
-	len int
-	pos int
+	w             *Word
+	len           int
+	pos           int
+	actualPortion *Word
 }
 
 func NewTextPortion(str string, l int, options ...func(dictionary *TextPortion)) *TextPortion {
@@ -20,5 +21,21 @@ func (tp *TextPortion) Next() bool {
 
 func (tp *TextPortion) GetNext() *Word {
 	tp.pos++
-	return NewWord(tp.w.str[tp.pos : tp.pos+tp.len])
+	if tp.actualPortion == nil {
+		// Generate a new world
+		tp.actualPortion = NewWord(tp.w.str[tp.pos:tp.pos+tp.len], WithBuildFrequency())
+	} else {
+		// Update frequency
+		f := tp.actualPortion.frequency
+
+		// Remove the first character
+		f[int(tp.w.str[tp.pos-1])-97]--
+
+		// Add the new character
+		f[int(tp.w.str[tp.pos+tp.len-1])-97]++
+
+		// New word with calculated frequency
+		tp.actualPortion = NewWord(tp.w.str[tp.pos:tp.pos+tp.len], WithFrequency(&f))
+	}
+	return tp.actualPortion
 }

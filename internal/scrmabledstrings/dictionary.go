@@ -13,7 +13,6 @@ import (
 type Dictionary struct {
 	reader io.Reader
 	words  []*Word
-	param  string
 }
 
 func NewDictionary(options ...func(dictionary *Dictionary)) *Dictionary {
@@ -23,13 +22,6 @@ func NewDictionary(options ...func(dictionary *Dictionary)) *Dictionary {
 	}
 
 	return obj
-}
-
-// WithParam sets the param of the Dictionary
-func WithParam(param string) func(f *Dictionary) {
-	return func(p *Dictionary) {
-		p.param = param
-	}
 }
 
 // WithReader sets the reader of the Dictionary
@@ -63,7 +55,7 @@ func (d *Dictionary) BuildWords() {
 	scanner.Buffer(buf, maxCapacity)
 
 	for scanner.Scan() {
-		d.words = append(d.words, NewWord(scanner.Text()))
+		d.words = append(d.words, NewWord(scanner.Text(), WithBuildFrequency()))
 	}
 }
 
@@ -84,6 +76,18 @@ func (d *Dictionary) Result(s string) (n, l int) {
 		}
 	}
 	return num, len(d.words)
+}
+
+func (d *Dictionary) worldCount() int {
+	return len(d.words)
+}
+
+func (d *Dictionary) worldStrings() []string {
+	ret := make([]string, 0)
+	for _, w := range d.words {
+		ret = append(ret, w.str)
+	}
+	return ret
 }
 
 // opens file
