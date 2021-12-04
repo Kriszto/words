@@ -14,10 +14,28 @@ func TestWord_Equals(t *testing.T) {
 		desc     string
 	}{
 		{
-			data1:    NewWord("12345"),
-			data2:    NewWord("13425"),
+			data1:    NewWord("abcde"),
+			data2:    NewWord("abcde"),
 			expected: true,
-			desc:     "q. equal",
+			desc:     "1. equal",
+		},
+		{
+			data1:    NewWord("abcde"),
+			data2:    NewWord("adcbe"),
+			expected: true,
+			desc:     "2. equal",
+		},
+		{
+			data1:    NewWord("abcde"),
+			data2:    NewWord("abcd"),
+			expected: false,
+			desc:     "3. not equal",
+		},
+		{
+			data1:    NewWord("abcde"),
+			data2:    NewWord("abcdef"),
+			expected: false,
+			desc:     "4. not equal",
 		},
 	}
 

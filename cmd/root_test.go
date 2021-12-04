@@ -56,9 +56,11 @@ func TestProcess(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("test case #%d", tt.number), func(t *testing.T) {
-			r := process(fmt.Sprintf("../testdata/generated/dictionary_%d.txt", tt.number), fmt.Sprintf("../testdata/generated/input_%d.txt", tt.number))
+			r := process(
+				fmt.Sprintf("../testdata/generated/dictionary_%d.txt", tt.number),
+				fmt.Sprintf("../testdata/generated/input_%d.txt", tt.number),
+			)
 			assert.Equal(t, []string{fmt.Sprintf("Case #0: %d", tt.count)}, r)
 		})
 	}
-
 }

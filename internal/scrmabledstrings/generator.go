@@ -106,7 +106,7 @@ func (g *Generator) GenerateInput(i GeneratorInput) string {
 	for k := int64(3); k <= i.N; k++ {
 		// chr=rune
 		// ord=int
-		//xi = ( A * xi-1 + B * xi-2 + C ) modulo D.
+		// xi = ( A * xi-1 + B * xi-2 + C ) modulo D.
 		t := i.A*x2 + i.B*x1 + i.C
 		xi := t % i.D
 
@@ -117,7 +117,6 @@ func (g *Generator) GenerateInput(i GeneratorInput) string {
 		ret += string(si)
 
 		x1, x2 = x2, xi
-
 	}
 	fmt.Println()
 	return ret

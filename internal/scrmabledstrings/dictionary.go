@@ -71,18 +71,6 @@ func (d *Dictionary) GetWords() []*Word {
 	return d.words
 }
 
-func (d *Dictionary) worldCount() int {
-	return len(d.words)
-}
-
-func (d *Dictionary) worldStrings() (ret []string) {
-	ret = make([]string, 0)
-	for _, w := range d.words {
-		ret = append(ret, w.str)
-	}
-	return
-}
-
 func (d *Dictionary) Debug(s string) {
 	n, l := d.Result(s)
 	xlog.Debugf("result %d/%d", n, l)

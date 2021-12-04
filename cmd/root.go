@@ -26,7 +26,6 @@ func NewRootCmd() *cobra.Command {
 			}
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
-
 			dictFilename, _ := cmd.Flags().GetString("dictionary")
 			inputFilename, _ := cmd.Flags().GetString("input")
 			verbose, _ = cmd.Flags().GetBool("verbose")
@@ -42,7 +41,7 @@ func NewRootCmd() *cobra.Command {
 	}
 }
 
-func process(dictFilename string, inputFilename string) []string {
+func process(dictFilename, inputFilename string) []string {
 	ret := make([]string, 0)
 	d := scrmabledstrings.NewDictionary(scrmabledstrings.WithFileName(dictFilename))
 	d.BuildWords()

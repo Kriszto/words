@@ -6,8 +6,8 @@ type TextPortion struct {
 	pos int
 }
 
-func NewTextPortion(str string, len int, options ...func(dictionary *TextPortion)) *TextPortion {
-	obj := &TextPortion{w: NewWord(str), len: len, pos: -1}
+func NewTextPortion(str string, l int, options ...func(dictionary *TextPortion)) *TextPortion {
+	obj := &TextPortion{w: NewWord(str), len: l, pos: -1}
 	for _, option := range options {
 		option(obj)
 	}
