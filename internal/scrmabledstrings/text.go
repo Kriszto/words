@@ -1,25 +1,25 @@
 package scrmabledstrings
 
-type TextPortion struct {
+type Text struct {
 	w             *Word
 	len           int
 	pos           int
 	actualPortion *Word
 }
 
-func NewTextPortion(str string, l int, options ...func(dictionary *TextPortion)) *TextPortion {
-	obj := &TextPortion{w: NewWord(str), len: l, pos: -1}
+func NewTextPortion(str string, l int, options ...func(dictionary *Text)) *Text {
+	obj := &Text{w: NewWord(str), len: l, pos: -1}
 	for _, option := range options {
 		option(obj)
 	}
 	return obj
 }
 
-func (tp *TextPortion) Next() bool {
+func (tp *Text) Next() bool {
 	return tp.pos < len(tp.w.str)-tp.len
 }
 
-func (tp *TextPortion) GetNext() *Word {
+func (tp *Text) GetNext() *Word {
 	tp.pos++
 	if tp.actualPortion == nil {
 		// Generate a new world
