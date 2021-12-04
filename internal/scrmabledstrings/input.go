@@ -2,7 +2,6 @@ package scrmabledstrings
 
 import (
 	"bufio"
-	"github.com/fatih/color"
 	"io"
 	"log"
 )
@@ -37,19 +36,19 @@ func WithInputParam(param string) func(f *Input) {
 	}
 }
 
-// opens file
-func (inp *Input) ProcessFile() {
-	color.Green("processing file ...")
-	r := bufio.NewReader(inp.reader)
-	for {
-		if c, _, err := r.ReadRune(); err != nil {
-			if err == io.EOF {
-				break
-			} else {
-				log.Fatal(err)
-			}
-		} else {
-			inp.dict.addLetter(string(c))
-		}
+// ProcessInput takes a pointer to the processed ticket slice,
+// reads input in a loop, and prints out the result
+func (inp *Input) ProcessInput() []int {
+	ret := make([]int, 0)
+	scanner := bufio.NewScanner(inp.reader)
+	for scanner.Scan() {
+		s := scanner.Text()
+		n, _ := inp.dict.Result(s)
+		ret = append(ret, n)
 	}
+
+	if err := scanner.Err(); err != nil {
+		log.Println(err)
+	}
+	return ret
 }

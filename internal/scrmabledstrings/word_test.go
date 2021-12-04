@@ -6,6 +6,63 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestWord_Equals(t *testing.T) {
+	var tests = []struct {
+		data1    *Word
+		data2    *Word
+		expected bool
+		desc     string
+	}{
+		{
+			data1:    NewWord("12345"),
+			data2:    NewWord("13425"),
+			expected: true,
+			desc:     "q. equal",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.data1.Equals(tt.data2))
+		})
+	}
+}
+
+func TestWord_IsInString(t *testing.T) {
+	var tests = []struct {
+		w        *Word
+		s        string
+		expected bool
+		desc     string
+	}{
+		{
+			w:        NewWord("abcde"),
+			s:        "abcdelkh",
+			expected: true,
+			desc:     "start equal",
+		},
+		{
+			w:        NewWord("abcde"),
+			s:        "dfabcdelh",
+			expected: true,
+			desc:     "middle equal",
+		},
+		{
+			w:        NewWord("abcde"),
+			s:        "wsfdabcde",
+			expected: true,
+			desc:     "end equal",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.desc, func(t *testing.T) {
+			assert.Equal(t, tt.expected, tt.w.IsInString(tt.s))
+		})
+	}
+}
+
+/*
 func TestAddLetter(t *testing.T) {
 	var tests = []struct {
 		data     *Word
@@ -121,6 +178,30 @@ func TestAddLetter(t *testing.T) {
 			letters:  "ooco",
 			desc:     "18 row, valid input",
 		},
+		{
+			data:     NewWord("kki"),
+			expected: NewWord("kki", WithStatus(InProgress), WithFindings([]int{1, 0, 0}), WithPosition(1)),
+			letters:  "kik",
+			desc:     "19 row, valid input",
+		},
+		{
+			data:     NewWord("kki"),
+			expected: NewWord("kki", WithStatus(NoHit), WithFindings([]int{0, 0, 0}), WithPosition(0)),
+			letters:  "uksiykikmkmw",
+			desc:     "20 row, valid input",
+		},
+		{
+			data:     NewWord("kki"),
+			expected: NewWord("kki", WithStatus(NoHit), WithFindings([]int{0, 0, 0}), WithPosition(0)),
+			letters:  "kkeki",
+			desc:     "21 row, valid input",
+		},
+		{
+			data:     NewWord("bjthd"),
+			expected: NewWord("bjthd", WithStatus(NoHit), WithFindings([]int{0, 0, 0}), WithPosition(0)),
+			letters:  "zzxvlbhjtdjxzvtbxlnr",
+			desc:     "21 row, valid input",
+		},
 	}
 
 	for _, tt := range tests {
@@ -230,4 +311,4 @@ func TestRewind(t *testing.T) {
 			assert.Equal(t, tt.expected, tt.data)
 		})
 	}
-}
+}*/

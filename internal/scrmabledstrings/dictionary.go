@@ -71,18 +71,6 @@ func (d *Dictionary) GetWords() []*Word {
 	return d.words
 }
 
-func (d *Dictionary) addLetter(l string) {
-	for _, w := range d.words {
-		w.AddLetter(l)
-	}
-}
-
-func (d *Dictionary) addLetters(s string) {
-	for _, l := range s {
-		d.addLetter(string(l))
-	}
-}
-
 func (d *Dictionary) worldCount() int {
 	return len(d.words)
 }
@@ -95,15 +83,15 @@ func (d *Dictionary) worldStrings() (ret []string) {
 	return
 }
 
-func (d *Dictionary) Debug() {
-	n, l := d.Result()
+func (d *Dictionary) Debug(s string) {
+	n, l := d.Result(s)
 	xlog.Debugf("result %d/%d", n, l)
 }
 
-func (d *Dictionary) Result() (n, l int) {
+func (d *Dictionary) Result(s string) (n, l int) {
 	num := 0
 	for _, w := range d.words {
-		if w.status == Found {
+		if w.IsInString(s) {
 			num++
 		}
 	}

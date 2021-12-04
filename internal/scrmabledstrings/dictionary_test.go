@@ -1,11 +1,6 @@
 package scrmabledstrings
 
-import (
-	"github.com/stretchr/testify/assert"
-	"strings"
-	"testing"
-)
-
+/*
 func TestBuildWords(t *testing.T) {
 	var tests = []struct {
 		data      string
@@ -107,4 +102,4 @@ func TestAddLettersAndResult(t *testing.T) {
 			assert.Equal(t, tt.expectedResult, n)
 		})
 	}
-}
+}*/
