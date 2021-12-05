@@ -64,9 +64,7 @@ docker-test:
 				go test -v -count=1 --race -cover $${LIST_OF_FILES} -coverprofile=coverage.out'
 
 .PHONY: docker-run
-#: Run tests with race detection and coverage report
 docker-run:
-	@echo $(LOG_LEVEL)
 	@docker run \
 		-v $(realpath $(INPUT)):/input.txt \
 		-v $(realpath $(DICT)):/dictionary.txt \

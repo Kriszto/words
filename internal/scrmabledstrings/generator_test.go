@@ -24,14 +24,14 @@ l o 1000 975016853 972311008 925928190 999999236`)
 func TestGenerator_convertParams(t *testing.T) {
 	g := NewGenerator()
 	params := []string{"l", "o", "1000", "975016853", "972311008", "925928190", "999999236"}
-	s1, s2, n, a, b, c, d := g.convertParams(params)
-	assert.Equal(t, 'l', s1)
-	assert.Equal(t, 'o', s2)
-	assert.EqualValues(t, 1000, n)
-	assert.EqualValues(t, 975016853, a)
-	assert.EqualValues(t, 972311008, b)
-	assert.EqualValues(t, 925928190, c)
-	assert.EqualValues(t, 999999236, d)
+	gi := g.convertParams(params)
+	assert.Equal(t, 'l', gi.S1)
+	assert.Equal(t, 'o', gi.S2)
+	assert.EqualValues(t, 1000, gi.N)
+	assert.EqualValues(t, 975016853, gi.A)
+	assert.EqualValues(t, 972311008, gi.B)
+	assert.EqualValues(t, 925928190, gi.C)
+	assert.EqualValues(t, 999999236, gi.D)
 }
 
 func TestGenerator_GenerateInput(t *testing.T) {
@@ -45,6 +45,6 @@ func TestGenerator_GenerateInput(t *testing.T) {
 		C:  925928190,
 		D:  999999236,
 	})
-	expected := "lonzrbfrrbpjrtlzfvjzdflzhjthnjdhzbntbjxfbfbpzvvlfxbvxxjvnnphzvdhjxrdnlxdjrbxpxxvzpvljbtdtffnzbnxfbxbtpzpjjrzhhrlbjbnjztnfpxrbtfxhvdnxznzjjfrjxphdvjrdxdnhjhrvnxbtzbpzlvfvvlhjnxbzhpfrjrdrzlvtnrtbrlzvlbznzdvnprpfjxpztbjxxrxtrjrxdvprnxzfnzttxtnrjhvzlhvfjvpdrrrfxvxfftjtrzvtzftxfznxdtjhlbthxzlpftfrvdrlvfvfhbzttdxxdpvtfttxnbdtrlxfdtnjnpbjdxrphhtxdnxdjzddfhhfzzxrdxvjfdnjdlltjvttzvbrptpvxlnjzvzdfdzhjhpdldzjdbdjxltrjtdxvdnhjftpzztxpnrbjfhlhxvhbdztldvztxlljnbvrdxxvpjrtfrvxdjfbtrxflbztxjlrvhxtzzbfxdfptvflzxxnppfvxpbltvjlddjtrjflnrblvdnttbjvzbzbxdjlrpvhdbnzjhdtjplpfzrvttdrtrtrxzppltfnbdpbtxjvtrjdjnprtvzvzxbtzbvztxjbdhjhxndrzplrnnjdnpptvrdpnhbxjxztpxbnldbjxhnnpjtvpfrhznpffphrhjzdfnffllfnlzffxdtrndlhjrnflzldhdftlvjxfbllfffztdzlnfzrvthzhjvvhdzdzrhrzbhvtnbdxhpnrzjnrzzxpnzprfbpnjxbzvdbrfrnhhdzfbphfljjvlfjjllflfftfrzdrhbpbrfzdbrzhxhxxxdpbjvhpxrvjtfjlnjrtbtxxhrdjrbjxdfrjrzfftdplzlptzrltzpddffnvlxzbvfbxprlfbpbdbdbfxdnttbtdpzfthnhpddlrvrrjnrxnxrjbndrdhzbfrdnbbzzdhzxdjzjzlpldlnfvdpptptxrrtrxblnjfrjzfbnhrlvjl"
+	expected := "lonzrbfrrbpjrtlzfvjzdflzhjthnjdhzbntbjxfbfbpzvvlfxbvxxjvnnphzvdhjxrdnlxdjrbxpxxvzpvljbtdtffnzbnxfbxbtpzpjjrzhhrlbjbnjztnfpxrbtfxhvdnxznzjjfrjxphdvjrdxdnhjhrvnxbtzbpzlvfvvlhjnxbzhpfrjrdrzlvtnrtbrlzvlbznzdvnprpfjxpztbjxxrxtrjrxdvprnxzfnzttxtnrjhvzlhvfjvpdrrrfxvxfftjtrzvtzftxfznxdtjhlbthxzlpftfrvdrlvfvfhbzttdxxdpvtfttxnbdtrlxfdtnjnpbjdxrphhtxdnxdjzddfhhfzzxrdxvjfdnjdlltjvttzvbrptpvxlnjzvzdfdzhjhpdldzjdbdjxltrjtdxvdnhjftpzztxpnrbjfhlhxvhbdztldvztxlljnbvrdxxvpjrtfrvxdjfbtrxflbztxjlrvhxtzzbfxdfptvflzxxnppfvxpbltvjlddjtrjflnrblvdnttbjvzbzbxdjlrpvhdbnzjhdtjplpfzrvttdrtrtrxzppltfnbdpbtxjvtrjdjnprtvzvzxbtzbvztxjbdhjhxndrzplrnnjdnpptvrdpnhbxjxztpxbnldbjxhnnpjtvpfrhznpffphrhjzdfnffllfnlzffxdtrndlhjrnflzldhdftlvjxfbllfffztdzlnfzrvthzhjvvhdzdzrhrzbhvtnbdxhpnrzjnrzzxpnzprfbpnjxbzvdbrfrnhhdzfbphfljjvlfjjllflfftfrzdrhbpbrfzdbrzhxhxxxdpbjvhpxrvjtfjlnjrtbtxxhrdjrbjxdfrjrzfftdplzlptzrltzpddffnvlxzbvfbxprlfbpbdbdbfxdnttbtdpzfthnhpddlrvrrjnrxnxrjbndrdhzbfrdnbbzzdhzxdjzjzlpldlnfvdpptptxrrtrxblnjfrjzfbnhrlvjl" //nolint:lll
 	assert.Equal(t, expected, s)
 }

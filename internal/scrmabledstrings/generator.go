@@ -64,18 +64,8 @@ func (g *Generator) createDictionary(dir string, k int, seeds []string) {
 	datawriterDict := bufio.NewWriter(fileDict)
 	defer datawriterDict.Flush()
 
-	s1, s2, n, a, b, c, d := g.convertParams(seeds)
-	_, _ = datawriterDict.WriteString(g.GenerateInput(
-		GeneratorInput{
-			S1: s1,
-			S2: s2,
-			N:  n,
-			A:  a,
-			B:  b,
-			C:  c,
-			D:  d,
-		},
-	))
+	gi := g.convertParams(seeds)
+	_, _ = datawriterDict.WriteString(g.GenerateInput(gi))
 }
 
 func (g *Generator) creataInput(dir string, k int, words []string) {
@@ -90,14 +80,14 @@ func (g *Generator) creataInput(dir string, k int, words []string) {
 	}
 }
 
-func (g *Generator) scanTestCase(scanner *bufio.Scanner) ([]string, []string) {
+func (g *Generator) scanTestCase(scanner *bufio.Scanner) (words, params []string) {
 	_ = scanner.Text()
 	scanner.Scan()
 	scanner.Scan()
-	words := strings.Fields(scanner.Text())
+	words = strings.Fields(scanner.Text())
 	scanner.Scan()
-	params := strings.Fields(scanner.Text())
-	return words, params
+	params = strings.Fields(scanner.Text())
+	return
 }
 
 func (g *Generator) checkDir(set string) string {
@@ -111,7 +101,7 @@ func (g *Generator) checkDir(set string) string {
 	return dir
 }
 
-func (g *Generator) convertParams(params []string) (rune, rune, int64, int64, int64, int64, int64) {
+func (g *Generator) convertParams(params []string) GeneratorInput {
 	s1 := rune(params[0][0])
 	s2 := rune(params[1][0])
 	n, _ := strconv.ParseInt(params[2], 10, 64)
@@ -119,7 +109,16 @@ func (g *Generator) convertParams(params []string) (rune, rune, int64, int64, in
 	b, _ := strconv.ParseInt(params[4], 10, 64)
 	c, _ := strconv.ParseInt(params[5], 10, 64)
 	d, _ := strconv.ParseInt(params[6], 10, 64)
-	return s1, s2, n, a, b, c, d
+	gi := GeneratorInput{
+		S1: s1,
+		S2: s2,
+		N:  n,
+		A:  a,
+		B:  b,
+		C:  c,
+		D:  d,
+	}
+	return gi
 }
 
 func (g *Generator) GenerateInput(i GeneratorInput) string {
