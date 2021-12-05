@@ -41,7 +41,7 @@ func TestWord_Equals(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {
-			assert.Equal(t, tt.expected, tt.data1.Equals(tt.data2))
+			assert.Equal(t, tt.expected, tt.data1.equals(tt.data2))
 		})
 	}
 }
@@ -69,6 +69,12 @@ func TestWord_IsInString(t *testing.T) {
 			w:        NewWord("abcde", WithBuildFrequency()),
 			s:        "wsfdabcde",
 			expected: true,
+			desc:     "end equal",
+		},
+		{
+			w:        NewWord("abcde", WithBuildFrequency()),
+			s:        "wsfdabcdie",
+			expected: false,
 			desc:     "end equal",
 		},
 	}

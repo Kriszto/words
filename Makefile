@@ -31,6 +31,10 @@ coverage:
 	go test -coverprofile cover.out ./...
 	go tool cover -html=cover.out
 
+.PHONY: doc
+doc:
+	go doc -all ./internal/scrmabledstrings
+
 .PHONY: docker-build
 #: Build docker image
 docker-build:

@@ -30,6 +30,8 @@ func WithBuildFrequency() func(w *Word) {
 		w.buildFrequency()
 	}
 }
+
+// buildFrequency builds up a word's letter frequency
 func (w *Word) buildFrequency() {
 	for _, s := range w.str {
 		if int(s) < 97 {
@@ -40,15 +42,17 @@ func (w *Word) buildFrequency() {
 	}
 }
 
-func (w *Word) Equals(w2 *Word) bool {
+// equals calculates if two words are equal based on letter frequency
+func (w *Word) equals(w2 *Word) bool {
 	return len(w.str) == len(w2.str) && w.str[0] == w2.str[0] && w.str[len(w.str)-1] == w2.str[len(w2.str)-1] && w.frequency == w2.frequency
 }
 
+// IsInString checks if a string contains the scrambled form of a word
 func (w *Word) IsInString(s string) bool {
 	tp := NewFragment(s, len(w.str))
 	for tp.Next() {
 		g := tp.GetNext()
-		if w.Equals(g) {
+		if w.equals(g) {
 			return true
 		}
 	}
