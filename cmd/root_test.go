@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
 	"os"
 	"testing"
+
+	"github.com/rs/zerolog"
 
 	"github.com/stretchr/testify/assert"
 )

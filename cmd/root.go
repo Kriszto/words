@@ -2,11 +2,12 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"os"
 	"scrmabled-strings/internal/scrmabledstrings"
 	"time"
+
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 
 	"github.com/spf13/cobra"
 
@@ -21,19 +22,16 @@ func NewRootCmd() *cobra.Command {
 		Use: "scrambled-strings",
 		PostRun: func(cmd *cobra.Command, args []string) {
 			elapsed := time.Since(start)
-			log.Debug().Msgf("File reading and processing in %s", elapsed)
+			log.Info().Str("elapsed time", elapsed.String()).Msgf("File reading and processing finished")
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			dictFilename, _ := cmd.Flags().GetString("dictionary")
 			inputFilename, _ := cmd.Flags().GetString("input")
-			verbose, _ := cmd.Flags().GetBool("verbose")
 			logLevel, _ := cmd.Flags().GetInt("log-level")
 
-			setupLogging(verbose, logLevel)
+			setupLogging(logLevel)
 
-			if verbose {
-				log.Debug().Msgf("dictionary: %s, input: %s", dictFilename, inputFilename)
-			}
+			log.Debug().Msgf("dictionary: %s, input: %s", dictFilename, inputFilename)
 			ret := process(dictFilename, inputFilename)
 			for _, r := range ret {
 				fmt.Println(r)
@@ -43,18 +41,14 @@ func NewRootCmd() *cobra.Command {
 	}
 }
 
-func setupLogging(verbose bool, logLevel int) {
+func setupLogging(logLevel int) {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	globalLevel := zerolog.Disabled
-	if verbose {
-		if logLevel == 0 {
-			globalLevel = zerolog.NoLevel
-		} else if logLevel == 2 {
-			globalLevel = zerolog.DebugLevel
-		} else {
-			globalLevel = zerolog.InfoLevel
-		}
+	if logLevel == 1 {
+		globalLevel = zerolog.InfoLevel
+	} else if logLevel == 2 {
+		globalLevel = zerolog.DebugLevel
 	}
 	zerolog.SetGlobalLevel(globalLevel)
 	log.Level(globalLevel)
@@ -88,7 +82,7 @@ func init() {
 	rootCmd.Flags().StringP("dictionary", "d", "", "Dictionary filename")
 	rootCmd.Flags().StringP("input", "i", "", "Input filename")
 	rootCmd.Flags().BoolP("verbose", "v", false, "Verbose output")
-	rootCmd.Flags().IntP("log-level", "l", 1, "log level, 0: no logging, 1: info leve (default)l, 2: debug level")
+	rootCmd.Flags().IntP("log-level", "l", 0, "log level, 0 (default): no logging, 1: info level, 2: debug level")
 	_ = rootCmd.MarkFlagRequired("input")
 	_ = rootCmd.MarkFlagRequired("dictionary")
 }

@@ -2,8 +2,9 @@ package scrmabledstrings
 
 import (
 	"bufio"
-	"github.com/rs/zerolog/log"
 	"io"
+
+	"github.com/rs/zerolog/log"
 )
 
 type Input struct {
