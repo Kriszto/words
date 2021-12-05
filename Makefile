@@ -71,3 +71,10 @@ docker-run:
 		-t ${DOCKER_IMAGE_NAME}:${APP_VERSION} \
 		/usr/local/bin/${APP_NAME} -i /input.txt -d /dictionary.txt \
 		$(if $(LOG_LEVEL), -l ${LOG_LEVEL},)
+
+.PHONY: docker-generate
+docker-generate:
+	@docker run \
+		-v $(realpath $(INPUT)):/input.txt \
+		-t ${DOCKER_IMAGE_NAME}:${APP_VERSION} \
+		/usr/local/bin/${APP_NAME} generate
