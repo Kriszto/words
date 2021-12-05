@@ -1,40 +1,40 @@
 # Words
 Code Challenge Solution
 
-## Basic commands
+# Basic commands
 
-### Run the tests
+## Run the tests
 
-#### in docker
+### in docker
 ```shell
 make docker-test
 ```
-#### in bash
+### in bash
 ```shell
 make test
 ```
 
-### Run golangci-lint
+## Run golangci-lint
 
-#### in docker
+### in docker
 ```shell
 make docker-lint
 ```
-#### in bash
+### in bash
 ```shell
 make lint
 ```
 
-### Build the program
+## Build the program
 
-#### in docker
+### in docker
 ```shell
 make docker-build
 ```
 
 Builds a docker image  with version tag
 
-#### in bash
+### in bash
 ```shell
 makeb uild
 ```
@@ -42,22 +42,22 @@ makeb uild
 Builds the program in the current directory
 
 
-### Run the program
+## Run the program
 There are several test files in the [testdata/generated/ts1](testdata/generated/ts1) directory.
 Use them in pair, eg. [testdata/generated/ts1/dictionary_1.txt](testdata/generated/ts1) with [testdata/generated/ts1/input_1.txt](testdata/generated/ts1)
 
-#### Run in docker
+### Run in docker
 ```shell
 make docker-run INPUT=testdata/generated/ts1/input_1.txt DICT=testdata/generated/ts1/dictionary_1.txt LOG_LEVEL=1
 ```
 
-**Parameters**:
-- **INPUT**: mandatory, path to input file
-- **DICT**: mandatory, path to input dictionary file
-- **LOG_LEVEL**: optional, level of logging
-  - **0**: no logging
-  - **1**: info level logging
-  - **2**: debug level logging
+Parameters:
+- INPUT: mandatory, path to input file
+- DICT: mandatory, path to input dictionary file
+- LOG_LEVEL: optional, level of logging
+  - 0: no logging
+  - 1: info level logging
+  - 2: debug level logging
 
 The output is as described in the challenge:
 ```
@@ -65,7 +65,7 @@ Case #1: 2
 ```
 Where first number is the line number and the second one is the number of words from the dictionary that appear (in their original or scrambled form) as substrings of the given string.
 
-#### Run in bash
+### Run in bash
 ```shell
 ./scrambled-strings --input testdata/generated/ts1/input_1.txt  -d testdata/generated/ts1/dictionary_1.txt -l 1
 ```
@@ -91,20 +91,20 @@ Flags:
 Use "scrambled-strings [command] --help" for more information about a command.
 ```
 
-## Helper commands
+# Helper commands
 
-### Show test coverage
+## Show test coverage
 
-#### in bash
+### in bash
 
 ```shell
 make coverage
 ```
 Shows test coverage in the default browser.
 
-### Generating test files from original [test sets](testdata/original)
+## Generating test files from original [test sets](testdata/original)
 
-#### in bash
+### in bash
 
 ```shell
 ./scrambled-strings generate
