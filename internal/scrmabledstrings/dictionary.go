@@ -61,6 +61,7 @@ func (d *Dictionary) Result(s string) (n, l int) {
 	log.Info().Str("s", s).Msg("Processing input")
 	num := 0
 	for i, w := range d.words {
+		log.Debug().Str("word", w.str).Str("position", fmt.Sprintf("%d/%d", i+1, len(d.words))).Msgf("Searching for word")
 		if w.IsInString(s) {
 			log.Debug().Str("word", w.str).Str("position", fmt.Sprintf("%d/%d", i+1, len(d.words))).Msgf("Word found")
 			num++

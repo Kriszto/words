@@ -1,6 +1,6 @@
 .golangci.yml.PHONY: build
 build:
-	go build -o bin/scrambled-strings main.go
+	go build -o ./scrambled-strings main.go
 
 .PHONY: run
 run:
