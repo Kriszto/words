@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io"
-	"os"
 
 	"github.com/rs/zerolog/log"
 )
@@ -38,23 +37,12 @@ func WithFileName(filename string) func(f *Dictionary) {
 	}
 }
 
-// WithWords sets the reader of the Dictionary
-func WithWords(w []*Word) func(f *Dictionary) {
-	return func(p *Dictionary) {
-		p.words = w
-	}
-}
-
 func (d *Dictionary) BuildWords() {
 	log.Info().Msg("Building words")
 	scanner := bufio.NewScanner(d.reader)
 	for scanner.Scan() {
 		d.words = append(d.words, NewWord(scanner.Text(), WithBuildFrequency()))
 	}
-}
-
-func (d *Dictionary) GetWords() []*Word {
-	return d.words
 }
 
 func (d *Dictionary) Result(s string) (n, l int) {
@@ -82,17 +70,4 @@ func (d *Dictionary) worldStrings() []string {
 		ret = append(ret, w.str)
 	}
 	return ret
-}
-
-// opens file
-func openFile(filename string) *os.File {
-	log.Info().Str("filename", filename).Msg("Opening file")
-	file, err := os.Open(filename)
-	if err != nil {
-		fmt.Printf("Unable to open file %s (%s)", filename, err)
-		fmt.Println()
-		os.Exit(2)
-	}
-
-	return file
 }

@@ -7,7 +7,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/fatih/color"
+	"github.com/rs/zerolog/log"
+)
+
+const (
+	inputPattern  = "testdata/original/%s_input.txt"
+	outputPattern = "testdata/generated/%s"
 )
 
 type Generator struct {
@@ -30,15 +35,9 @@ func NewGenerator(options ...func(dictionary *Generator)) *Generator {
 
 // ProcessData iterate through the input reader and returns the slice of processed numbers and issues
 func (g *Generator) ProcessData(set string) {
-	dir := fmt.Sprintf("testdata/generated/%s", set)
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		err := os.Mkdir(dir, os.ModePerm)
-		if err != nil {
-			panic(err)
-		}
-	}
+	dir := g.checkDir(set)
 
-	r, _ := os.Open(fmt.Sprintf("testdata/original/%s_input.txt", set))
+	r := openFile(fmt.Sprintf(inputPattern, set))
 	k := 0
 
 	scanner := bufio.NewScanner(r)
@@ -47,54 +46,80 @@ func (g *Generator) ProcessData(set string) {
 		num, _ := strconv.ParseInt(scanner.Text(), 10, 64)
 		for i := 0; i < int(num); i++ {
 			k++
-			color.Green("generating %s #%d", set, k)
-			_ = scanner.Text()
-			scanner.Scan()
-			scanner.Scan()
-			words := strings.Fields(scanner.Text())
-			scanner.Scan()
-			params := strings.Fields(scanner.Text())
-			fileInput, err := os.Create(fmt.Sprintf("%s/dictionary_%d.txt", dir, k))
-			if err != nil {
-				panic(err)
-			}
-			datawriter := bufio.NewWriter(fileInput)
-			for _, data := range words {
-				_, _ = datawriter.WriteString(data + "\n")
-			}
-			datawriter.Flush()
-			fileInput.Close()
+			log.Info().Str("set", set).Str("num", strconv.Itoa(k)).Msg("generating test cases")
 
-			fileDict, err := os.Create(fmt.Sprintf("%s/input_%d.txt", dir, k))
-			if err != nil {
-				panic(err)
-			}
-			datawriterDict := bufio.NewWriter(fileDict)
+			words, seeds := g.scanTestCase(scanner)
 
-			n, _ := strconv.ParseInt(params[2], 10, 64)
-			a, _ := strconv.ParseInt(params[3], 10, 64)
-			b, _ := strconv.ParseInt(params[4], 10, 64)
-			c, _ := strconv.ParseInt(params[5], 10, 64)
-			d, _ := strconv.ParseInt(params[6], 10, 64)
-			_, _ = datawriterDict.WriteString(g.GenerateInput(
-				GeneratorInput{
-					S1: rune(params[0][0]),
-					S2: rune(params[1][0]),
-					N:  n,
-					A:  a,
-					B:  b,
-					C:  c,
-					D:  d,
-				},
-			))
+			g.creataInput(dir, k, words)
 
-			datawriterDict.Flush()
-			fileDict.Close()
+			g.createDictionary(dir, k, seeds)
 		}
 	}
 }
-func (g *Generator) Generate(i GeneratorInput) {
 
+func (g *Generator) createDictionary(dir string, k int, seeds []string) {
+	fileDict := createFile(fmt.Sprintf("%s/input_%d.txt", dir, k))
+	defer fileDict.Close()
+
+	datawriterDict := bufio.NewWriter(fileDict)
+	defer datawriterDict.Flush()
+
+	s1, s2, n, a, b, c, d := g.convertParams(seeds)
+	_, _ = datawriterDict.WriteString(g.GenerateInput(
+		GeneratorInput{
+			S1: s1,
+			S2: s2,
+			N:  n,
+			A:  a,
+			B:  b,
+			C:  c,
+			D:  d,
+		},
+	))
+}
+
+func (g *Generator) creataInput(dir string, k int, words []string) {
+	fileInput := createFile(fmt.Sprintf("%s/dictionary_%d.txt", dir, k))
+	defer fileInput.Close()
+
+	datawriter := bufio.NewWriter(fileInput)
+	defer datawriter.Flush()
+
+	for _, data := range words {
+		_, _ = datawriter.WriteString(data + "\n")
+	}
+}
+
+func (g *Generator) scanTestCase(scanner *bufio.Scanner) ([]string, []string) {
+	_ = scanner.Text()
+	scanner.Scan()
+	scanner.Scan()
+	words := strings.Fields(scanner.Text())
+	scanner.Scan()
+	params := strings.Fields(scanner.Text())
+	return words, params
+}
+
+func (g *Generator) checkDir(set string) string {
+	dir := fmt.Sprintf(outputPattern, set)
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		err := os.Mkdir(dir, os.ModePerm)
+		if err != nil {
+			panic(err)
+		}
+	}
+	return dir
+}
+
+func (g *Generator) convertParams(params []string) (rune, rune, int64, int64, int64, int64, int64) {
+	s1 := rune(params[0][0])
+	s2 := rune(params[1][0])
+	n, _ := strconv.ParseInt(params[2], 10, 64)
+	a, _ := strconv.ParseInt(params[3], 10, 64)
+	b, _ := strconv.ParseInt(params[4], 10, 64)
+	c, _ := strconv.ParseInt(params[5], 10, 64)
+	d, _ := strconv.ParseInt(params[6], 10, 64)
+	return s1, s2, n, a, b, c, d
 }
 
 func (g *Generator) GenerateInput(i GeneratorInput) string {

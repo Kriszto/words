@@ -59,8 +59,9 @@ func process(dictFilename, inputFilename string) []string {
 	d := scrmabledstrings.NewDictionary(scrmabledstrings.WithFileName(dictFilename))
 	d.BuildWords()
 
-	i := scrmabledstrings.NewInput(inputFilename, scrmabledstrings.WithDictionary(d))
-	r := i.ProcessInput()
+	i := scrmabledstrings.NewInput(scrmabledstrings.WithInputFileName(inputFilename), scrmabledstrings.WithDictionary(d))
+	t := i.ReadInput()
+	r := i.ProcessInput(t)
 	for k, n := range r {
 		ret = append(ret, fmt.Sprintf("Case #%d: %d", k, n))
 	}
