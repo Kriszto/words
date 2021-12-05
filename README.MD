@@ -59,7 +59,7 @@ make docker-run INPUT=testdata/generated/ts1/input_1.txt DICT=testdata/generated
   - **1**: info level logging
   - **2**: debug level logging
 
-The output is a line per input string:
+The output is as described in the challenge:
 ```
 Case #1: 2
 ```
