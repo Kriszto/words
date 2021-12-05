@@ -1,6 +1,8 @@
 package scrmabledstrings
 
-import "github.com/Ak-Army/xlog"
+import (
+	"github.com/rs/zerolog/log"
+)
 
 type Word struct {
 	str       string
@@ -31,7 +33,7 @@ func WithBuildFrequency() func(w *Word) {
 func (w *Word) buildFrequency() {
 	for _, s := range w.str {
 		if int(s) < 97 {
-			xlog.Debugf("invalid character %s", s)
+			log.Debug().Msgf("invalid character %s", string(s))
 			continue
 		}
 		w.frequency[int(s)-97]++
@@ -43,7 +45,7 @@ func (w *Word) Equals(w2 *Word) bool {
 }
 
 func (w *Word) IsInString(s string) bool {
-	tp := NewTextPortion(s, len(w.str))
+	tp := NewFragment(s, len(w.str))
 	for tp.Next() {
 		g := tp.GetNext()
 		if w.Equals(g) {

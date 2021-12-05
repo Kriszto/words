@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/Ak-Army/xlog"
+	"github.com/rs/zerolog/log"
 	"scrmabled-strings/internal/scrmabledstrings"
 
 	"github.com/spf13/cobra"
@@ -12,7 +12,7 @@ var generateCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Generates a set of test cases from original tests.",
 	Run: func(cmd *cobra.Command, args []string) {
-		xlog.Debug("generate called")
+		log.Debug().Msgf("generate called")
 		g := scrmabledstrings.NewGenerator()
 		g.ProcessData("ts1")
 	},

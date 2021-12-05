@@ -2,8 +2,8 @@ package scrmabledstrings
 
 import (
 	"bufio"
+	"github.com/rs/zerolog/log"
 	"io"
-	"log"
 )
 
 type Input struct {
@@ -39,6 +39,7 @@ func WithInputParam(param string) func(f *Input) {
 // ProcessInput takes a pointer to the processed ticket slice,
 // reads input in a loop, and prints out the result
 func (inp *Input) ProcessInput() []int {
+	log.Info().Msg("Reading input")
 	ret := make([]int, 0)
 	scanner := bufio.NewScanner(inp.reader)
 	for scanner.Scan() {
@@ -48,7 +49,7 @@ func (inp *Input) ProcessInput() []int {
 	}
 
 	if err := scanner.Err(); err != nil {
-		log.Println(err)
+		log.Fatal().Err(err).Msg("Scanner error")
 	}
 	return ret
 }

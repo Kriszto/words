@@ -6,8 +6,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/Ak-Army/xlog"
-	"github.com/fatih/color"
+	"github.com/rs/zerolog/log"
 )
 
 type Dictionary struct {
@@ -47,13 +46,8 @@ func WithWords(w []*Word) func(f *Dictionary) {
 }
 
 func (d *Dictionary) BuildWords() {
-	color.Green("building....")
+	log.Info().Msg("Building words")
 	scanner := bufio.NewScanner(d.reader)
-
-	const maxCapacity = 100000000 // your required line length
-	buf := make([]byte, maxCapacity)
-	scanner.Buffer(buf, maxCapacity)
-
 	for scanner.Scan() {
 		d.words = append(d.words, NewWord(scanner.Text(), WithBuildFrequency()))
 	}
@@ -63,16 +57,15 @@ func (d *Dictionary) GetWords() []*Word {
 	return d.words
 }
 
-func (d *Dictionary) Debug(s string) {
-	n, l := d.Result(s)
-	xlog.Debugf("result %d/%d", n, l)
-}
-
 func (d *Dictionary) Result(s string) (n, l int) {
+	log.Info().Str("s", s).Msg("Processing input")
 	num := 0
-	for _, w := range d.words {
+	for i, w := range d.words {
 		if w.IsInString(s) {
+			log.Debug().Str("word", w.str).Str("position", fmt.Sprintf("%d/%d", i+1, len(d.words))).Msgf("Word found")
 			num++
+		} else {
+			log.Debug().Str("word", w.str).Str("position", fmt.Sprintf("%d/%d", i+1, len(d.words))).Msgf("Word not found")
 		}
 	}
 	return num, len(d.words)
@@ -92,6 +85,7 @@ func (d *Dictionary) worldStrings() []string {
 
 // opens file
 func openFile(filename string) *os.File {
+	log.Info().Str("filename", filename).Msg("Opening file")
 	file, err := os.Open(filename)
 	if err != nil {
 		fmt.Printf("Unable to open file %s (%s)", filename, err)

@@ -2,10 +2,17 @@ package cmd
 
 import (
 	"fmt"
+	"github.com/rs/zerolog"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+	zerolog.SetGlobalLevel(zerolog.Disabled)
+	os.Exit(m.Run())
+}
 
 func TestProcess(t *testing.T) {
 	var tests = []struct {

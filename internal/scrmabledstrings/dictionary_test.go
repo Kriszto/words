@@ -1,11 +1,19 @@
 package scrmabledstrings
 
 import (
+	"os"
 	"strings"
 	"testing"
 
+	"github.com/rs/zerolog"
+
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMain(m *testing.M) {
+	zerolog.SetGlobalLevel(zerolog.Disabled)
+	os.Exit(m.Run())
+}
 
 func TestBuildWords(t *testing.T) {
 	var tests = []struct {
